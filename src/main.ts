@@ -1,9 +1,10 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config'; 
 import { ValidationPipe } from '@nestjs/common';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 // require('dotenv').config();
 
 async function bootstrap() {
@@ -13,6 +14,8 @@ async function bootstrap() {
   app.setBaseViewsDir(join(__dirname, '..', 'views')); // view
   app.setViewEngine('ejs');
   app.useGlobalPipes(new ValidationPipe());
+  const reflector = app.get( Reflector );
+  app.useGlobalGuards( new JwtAuthGuard( reflector ) );
 
   await app.listen(configService.get<string>('PORT'));
 }
