@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
-    private readonly configService: ConfigService,
+    private configService: ConfigService,
   ) {
     super({ // Giải mã token băng cách decode Secret Key
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

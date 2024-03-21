@@ -15,7 +15,7 @@ export class AppController {
     ) {}
 
     @Public()
-    @UseGuards(LocalAuthGuard)
+    // @UseGuards(LocalAuthGuard)
     @Post("/login")
     handleLogin(@Request() req){
       return this.authService.login(req.user)
@@ -29,7 +29,7 @@ export class AppController {
       return req.user;
     }
 
-    @UseGuards(JwtAuthGuard) // xác thực jwt
+    // @UseGuards(JwtAuthGuard) // xác thực jwt
     @Get('profile1')
     getProfile1(@Request() req) {
       return req.user;
