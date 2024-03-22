@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { User } from 'src/decorator/customize';
 import { IUser } from 'src/users/users.interface';
+
 
 @Controller('companies')
 export class CompaniesController {
@@ -15,8 +16,12 @@ export class CompaniesController {
   }
 
   @Get()
-  findAll() {
-    return this.companiesService.findAll();
+  findAll(
+    @Query("page") currentPage: string, // const currentPage = req.query.page;
+    @Query("limit") limit: string,
+    @Query() qs: string // get all  req.query : page, limit
+    ) {
+    return this.companiesService.findAll(+currentPage, +limit, qs);
   }
 
   @Get(':id')
