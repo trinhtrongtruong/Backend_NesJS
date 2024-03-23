@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
-import { User } from 'src/decorator/customize';
+import { ResponseMessage, User } from 'src/decorator/customize';
 import { IUser } from 'src/users/users.interface';
 
 
@@ -16,6 +16,7 @@ export class CompaniesController {
   }
 
   @Get()
+  @ResponseMessage("Fetch list Company with Paginate")
   findAll(
     @Query("page") currentPage: string, // const currentPage = req.query.page;
     @Query("limit") limit: string,
