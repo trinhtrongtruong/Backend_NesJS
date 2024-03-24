@@ -1,11 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { CreateUserDto, RegisterUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import mongoose, { Model } from 'mongoose';
 import { genSaltSync, hashSync, compareSync } from 'bcryptjs';
 import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
+import { IUser } from './users.interface';
 
 @Injectable()
 export class UsersService {
@@ -20,14 +21,34 @@ export class UsersService {
     // Store hash in your password DB.
   }
 
-  async create(createUserDto: CreateUserDto) {
-    const hashPassword = this.getHashPassword(createUserDto.password)
-    let user = await this.userModel.create({
-      email: createUserDto.email, 
+  async create(createUserDto: CreateUserDto, user: IUser) {
+    const { name, email, password, age, gender, address, role, company } = createUserDto;
+    const hashPassword = this.getHashPassword(password)
+    let newUser = await this.userModel.create({
+      name, email,
       password: hashPassword, 
-      name: createUserDto.name
+      gender, address, role, company,
+      createdBy: {
+        _id: user._id,
+        email: user.email
+      }
     })
-    return user ;
+    return newUser ;
+  }
+  async register(user: RegisterUserDto) {
+    const { name, email, password, age, gender, address } = user;
+    // add logic check email  
+    const isExist = await this.userModel.findOne({ email });
+    if(isExist){
+      throw new BadRequestException(`Email: ${email} đã tồn tại trên hệ thống. Vui lòng sử dụng email khác`)
+    }
+    const hashPassword = this.getHashPassword(password)
+    let newRegister = await this.userModel.create({
+      name, email,  
+      password: hashPassword, 
+      age, gender, address, role: "USER"
+    })
+    return newRegister ;
   }
 
   findAll() {

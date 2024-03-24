@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Render, UseGuards, Request} from '@nestjs/common';
-import { Public } from 'src/decorator/customize';
+import { RegisterUserDto } from './../users/dto/create-user.dto';
+import { Controller, Get, Post, Render, UseGuards, Request, Body} from '@nestjs/common';
+import { Public, ResponseMessage } from 'src/decorator/customize';
 import { LocalAuthGuard } from './local-auth.guard';
 import { AuthService } from './auth.service';
 
@@ -12,22 +13,16 @@ export class AuthController {
 
     @Public()
     @UseGuards(LocalAuthGuard)
-    @Post("/login")
+    @Post('/login')
     handleLogin(@Request() req){
-      return this.authService.login(req.user)
+      return this.authService.login(req.user);
     }
 
     
-    // @UseGuards(JwtAuthGuard)
-    @Public() // không xác thực jwt
-    @Get('profile')
-    getProfile(@Request() req) {
-      return req.user;
-    }
-
-    // @UseGuards(JwtAuthGuard) // xác thực jwt
-    @Get('profile1')
-    getProfile1(@Request() req) {
-      return req.user;
+    @Public()
+    @ResponseMessage("Register a new user")
+    @Post('/register')
+    handleRegister(@Body() registerUserDto: RegisterUserDto){
+      return this.authService.register(registerUserDto);
     }
 }
