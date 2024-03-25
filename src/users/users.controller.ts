@@ -3,16 +3,21 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IUser } from './users.interface';
-import { User } from 'src/decorator/customize';
+import { ResponseMessage, User } from 'src/decorator/customize';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post() // users/
-  create(@Body() createUserDto: CreateUserDto, @User() user: IUser)
+  @ResponseMessage("Create a new User")
+  async create(@Body() createUserDto: CreateUserDto, @User() user: IUser)
   {
-    return this.usersService.create(createUserDto, user);
+    let newUser = await this.usersService.create(createUserDto, user);
+    return {
+      _id: newUser?._id,
+      createdAt: newUser?.createdAt
+    };
   }
 
   @Get()
@@ -26,12 +31,15 @@ export class UsersController {
   }
 
   @Patch()
-  update(@Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(updateUserDto);
+  @ResponseMessage("Update a User")
+   async update(@Body() updateUserDto: UpdateUserDto, @User() user: IUser) {
+    let updatedUser = await this.usersService.update(updateUserDto, user);
+    return updatedUser;
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  @ResponseMessage("Delete a User")
+  async remove(@Param('id') id: string, @User() user: IUser) {
+    return await this.usersService.remove(id, user);
   }
 }
