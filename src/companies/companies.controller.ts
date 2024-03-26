@@ -15,15 +15,15 @@ export class CompaniesController {
     return this.companiesService.create(createCompanyDto, user);
   }
 
-  @Get()
+ @Get()
   @ResponseMessage("Fetch list Company with Paginate")
   findAll(
-    @Query("page") currentPage: string, // const currentPage = req.query.page;
-    @Query("limit") limit: string,
+    @Query("current") currentPage: string, // const currentPage = req.query.page;
+    @Query("pageSize") limit: string,
     @Query() qs: string // get all  req.query : page, limit
     ) {
     return this.companiesService.findAll(+currentPage, +limit, qs);
-  }
+  } 
 
   @Get(':id')
   findOne(@Param('id') id: string) {
