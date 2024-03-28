@@ -6,6 +6,7 @@ import { SoftDeleteModel } from 'soft-delete-plugin-mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { IUser } from 'src/users/users.interface';
 import aqp from 'api-query-params';
+import mongoose from 'mongoose';
 
 
 @Injectable()
@@ -14,8 +15,8 @@ export class CompaniesService {
     @InjectModel(Company.name) // decorator of User inject to userModel. User.name is name from users.module. User is model
     private companyModel: SoftDeleteModel<CompanyDocument>) {}
     
-  create(createCompanyDto: CreateCompanyDto, user: IUser) {
-    return this.companyModel.create(
+  async create(createCompanyDto: CreateCompanyDto, user: IUser) {
+    return await this.companyModel.create(
       { 
         ... createCompanyDto,
         createdBy: {
@@ -53,8 +54,12 @@ export class CompaniesService {
       }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} company`;
+  async findOne(id: string) {
+    if(!mongoose.Types.ObjectId.isValid(id))
+      return `not found job`;
+    else{
+      return await this.companyModel.findOne({_id: id})
+    }
   }
 
   async update(id: string, updateCompanyDto: UpdateCompanyDto, user: IUser) {
